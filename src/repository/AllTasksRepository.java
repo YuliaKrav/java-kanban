@@ -48,7 +48,7 @@ public class AllTasksRepository {
     }
 
     private void updateSubtask(int id, Subtask subtask) {
-        if (isSubtaskExisted(subtask) && idToSubTaskMap.get(id).getEpicId() == subtask.getEpicId()) {
+        if (isSubtaskExisted(subtask) && idToSubTaskMap.get(id).getEpicId().equals(subtask.getEpicId())) {
             idToSubTaskMap.put(id, subtask);
             int epicId = subtask.getEpicId();
             changeEpicStatus(epicId);
@@ -123,23 +123,18 @@ public class AllTasksRepository {
         return null;
     }
 
-    public List<Task> getTasksByType(TaskType type) {
-        List<Task> resultTasks = new ArrayList<>();
-        switch (type) {
-            case TASK:
-                resultTasks = new ArrayList<>(idToTaskMap.values());
-                break;
-
-            case SUBTASK:
-                resultTasks = new ArrayList<>(idToSubTaskMap.values());
-                break;
-
-            case EPIC:
-                resultTasks = new ArrayList<>(idToEpicMap.values());
-                break;
-        }
-        return resultTasks;
+    public List<Task> getAllTaskType() {
+        return new ArrayList<>(idToTaskMap.values());
     }
+
+    public List<Task> getAllSubtaskType() {
+        return new ArrayList<>(idToSubTaskMap.values());
+    }
+
+    public List<Task> getAllEpicType() {
+        return new ArrayList<>(idToEpicMap.values());
+    }
+
     public List<Task> getAllTasks() {
         List<Task> resultAllTaskList = new ArrayList<>();
 
@@ -179,33 +174,33 @@ public class AllTasksRepository {
         return null;
     }
 
-    public List<Task> deleteTasksByType(TaskType type) {
-        List<Task> deletedTasks = new ArrayList<>();
-        switch (type) {
-            case TASK:
-                deletedTasks = new ArrayList<>(idToTaskMap.values());
-                idToTaskMap.clear();
-                break;
-
-            case SUBTASK:
-                deletedTasks = new ArrayList<>(idToSubTaskMap.values());
-                idToSubTaskMap.clear();
-                deleteAllSubTaskInsideAllEpic();
-                break;
-
-            case EPIC:
-                deletedTasks = new ArrayList<>(idToEpicMap.values());
-                idToSubTaskMap.clear();
-                idToEpicMap.clear();
-                break;
-        }
+    public List<Task> deleteAllTaskType() {
+        List<Task> deletedTasks = new ArrayList<>(idToTaskMap.values());
+        idToTaskMap.clear();
         return deletedTasks;
     }
 
-    public void deleteAllTasks() {
+    public List<Task> deleteAllSubtaskType() {
+        List<Task> deletedTasks = new ArrayList<>(idToSubTaskMap.values());
+        idToSubTaskMap.clear();
+        deleteAllSubTaskInsideAllEpic();
+        return deletedTasks;
+    }
+
+    public List<Task> deleteAllEpicType() {
+        List<Task> deletedTasks = new ArrayList<>(idToEpicMap.values());
+        idToSubTaskMap.clear();
+        idToEpicMap.clear();
+        return deletedTasks;
+    }
+
+    public List<Task> deleteAllTasks() {
+        List<Task> deletedTasks = getAllTasks();
+
         idToTaskMap.clear();
         idToSubTaskMap.clear();
         idToEpicMap.clear();
+        return deletedTasks;
     }
 
     private void addTask(int id, Task task) {

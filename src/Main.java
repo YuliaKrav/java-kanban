@@ -1,20 +1,23 @@
 import constant.Status;
-import constant.TaskType;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import service.Managers;
 import service.TaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefaultTaskManager();
 
         Task task1 = taskManager.createTask(new Task("Task1", "Task1 description"));
         System.out.println("Task1 was created: " + task1);
 
         Task task2 = taskManager.createTask(new Task("Task2", "Task2 description", Status.DONE));
         System.out.println("Task2 was created: " + task2);
+
+        Task task3 = taskManager.createTask(new Task("Task3", "Task3 description", Status.DONE));
+        System.out.println("Task3 was created: " + task3);
 
         System.out.println();
 
@@ -30,7 +33,7 @@ public class Main {
         System.out.println("Subtask1 was created: " + subtask1);
         System.out.println("Subtask1 was added to Epic1: " + epic1);
 
-        Task subtask2 = taskManager.createTask(new Subtask("Subtask2", "Subtask2 description", Status.DONE,epic1.getId()));
+        Task subtask2 = taskManager.createTask(new Subtask("Subtask2", "Subtask2 description", Status.DONE, epic1.getId()));
         System.out.println("Subtask2 was created: " + subtask2);
         System.out.println("Subtask2 was added to Epic1: " + epic1);
 
@@ -42,13 +45,27 @@ public class Main {
 
         System.out.println();
 
-        System.out.println("All tasks in the database: ");
-        taskManager.printAllTasks();
+        System.out.println("All epic in the database: ");
+        System.out.println(taskManager.getAllEpicType());
 
         System.out.println();
 
-        System.out.println("All epic in the database: ");
-        System.out.println(taskManager.getTasksByType(TaskType.EPIC));
+        taskManager.getTaskById(epic2.getId());
+        taskManager.getTaskById(task1.getId());
+        System.out.println("All task in the history: ");
+        taskManager.printTaskList(taskManager.getHistory());
+
+        System.out.println();
+
+        taskManager.getTaskById(subtask2.getId());
+        taskManager.getTaskById(subtask1.getId());
+        System.out.println("All task in the database: ");
+        System.out.println(taskManager.getAllTaskType());
+
+        System.out.println();
+
+        System.out.println("All task in the history: ");
+        taskManager.printTaskList(taskManager.getHistory());
 
         System.out.println();
 
@@ -70,6 +87,6 @@ public class Main {
 
         System.out.println();
         System.out.println("All tasks in the database: ");
-        taskManager.printAllTasks();
+        taskManager.printTaskList(taskManager.getAllTasks());
     }
 }
