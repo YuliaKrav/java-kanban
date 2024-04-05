@@ -152,9 +152,12 @@ public class AllTasksRepository {
         return resultEpicSubtaskList;
     }
 
-    public Task deleteTaskById(int id) {
+    public List<Task> deleteTaskById(int id) {
+        List<Task> deletedTasks = new ArrayList<>();
+
         if (idToTaskMap.containsKey(id)) {
-            return idToTaskMap.remove(id);
+            deletedTasks.add(idToTaskMap.remove(id));
+            return deletedTasks;
         }
 
         if (idToSubTaskMap.containsKey(id)) {
@@ -164,12 +167,15 @@ public class AllTasksRepository {
             Status newEpicStatus = calculateNewEpicStatus(epic);
             epic.setStatus(newEpicStatus);
             idToEpicMap.put(epicId, epic);
-            return idToSubTaskMap.remove(id);
+            deletedTasks.add(idToSubTaskMap.remove(id));
+            return deletedTasks;
         }
 
         if (idToEpicMap.containsKey(id)) {
-            deleteSubtaskConnectedWithEpic(idToEpicMap.get(id));
-            return idToEpicMap.remove(id);
+            deletedTasks.add(idToEpicMap.get(id));
+            deletedTasks.addAll(deleteSubtaskConnectedWithEpic(idToEpicMap.get(id)));
+            idToEpicMap.remove(id);
+            return deletedTasks;
         }
         return null;
     }
@@ -231,10 +237,12 @@ public class AllTasksRepository {
         }
     }
 
-    private void deleteSubtaskConnectedWithEpic(Epic epic) {
+    private List<Task> deleteSubtaskConnectedWithEpic(Epic epic) {
+        List<Task> deletedSubtasks = new ArrayList<>();
         for (int idSubTask : epic.getSubtaskIdList()) {
-            idToSubTaskMap.remove(idSubTask);
+            deletedSubtasks.add(idToSubTaskMap.remove(idSubTask));
         }
+        return deletedSubtasks;
     }
 
     private void changeEpicStatus(int epicId) {

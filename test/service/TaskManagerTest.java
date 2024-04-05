@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
+
     protected T taskManager;
 
     @Test
@@ -164,8 +165,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Task createdTask = taskManager.createTask(task);
         assertNotNull(createdTask);
 
-        Task deletedTask = taskManager.deleteTaskById(createdTask.getId());
-        assertEquals(createdTask, deletedTask, "Deleted task should be the same as the created task.");
+        List<Task> deletedTasks = taskManager.deleteTaskById(createdTask.getId());
+        assertFalse(deletedTasks.isEmpty(), "Should return at least one deleted task.");
+        assertTrue(deletedTasks.contains(createdTask), "Deleted tasks should contain the created task.");
+
         assertNull(taskManager.getTaskById(createdTask.getId()), "Task should be deleted, so it should return null.");
     }
 
