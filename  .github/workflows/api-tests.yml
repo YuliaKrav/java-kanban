@@ -1,3 +1,5 @@
+name: Java Tests
+
 on:
   pull_request:
 
