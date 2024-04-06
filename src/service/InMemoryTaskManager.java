@@ -64,28 +64,38 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task deleteTaskById(int id) {
-        return allTasksRepository.deleteTaskById(id);
+    public List<Task> deleteTaskById(int id) {
+        List<Task> deletedTasks = allTasksRepository.deleteTaskById(id);
+        removeTasksFromHistoryManager(deletedTasks);
+        return deletedTasks;
     }
 
     @Override
     public List<Task> deleteAllTaskType() {
-        return allTasksRepository.deleteAllTaskType();
+        List<Task> deletedTasks = allTasksRepository.deleteAllTaskType();
+        removeTasksFromHistoryManager(deletedTasks);
+        return deletedTasks;
     }
 
     @Override
     public List<Task> deleteAllSubtaskType() {
-        return allTasksRepository.deleteAllSubtaskType();
+        List<Task> deletedTasks = allTasksRepository.deleteAllSubtaskType();
+        removeTasksFromHistoryManager(deletedTasks);
+        return deletedTasks;
     }
 
     @Override
     public List<Task> deleteAllEpicType() {
-        return allTasksRepository.deleteAllEpicType();
+        List<Task> deletedTasks = allTasksRepository.deleteAllEpicType();
+        removeTasksFromHistoryManager(deletedTasks);
+        return deletedTasks;
     }
 
     @Override
     public List<Task> deleteAllTasks() {
-        return allTasksRepository.deleteAllTasks();
+        List<Task> deletedTasks = allTasksRepository.deleteAllTasks();
+        removeTasksFromHistoryManager(deletedTasks);
+        return deletedTasks;
     }
 
     @Override
@@ -104,6 +114,12 @@ public class InMemoryTaskManager implements TaskManager {
     private int generateTaskId() {
         generatorTaskId++;
         return generatorTaskId;
+    }
+
+    private void removeTasksFromHistoryManager(List<Task> tasksList) {
+        for (Task task : tasksList) {
+            historyManager.remove(task.getId());
+        }
     }
 }
 
