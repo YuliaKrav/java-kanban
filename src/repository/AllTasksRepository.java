@@ -2,6 +2,7 @@ package repository;
 
 import constant.Status;
 import constant.TaskType;
+import exception.DuplicateTaskIdException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -9,6 +10,10 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static constant.Constants.DUPLICATE_EPIC_ID;
+import static constant.Constants.DUPLICATE_SUBTASK_ID;
+import static constant.Constants.DUPLICATE_TASK_ID;
 
 public class AllTasksRepository {
     HashMap<Integer, Task> idToTaskMap;
@@ -209,12 +214,19 @@ public class AllTasksRepository {
         return deletedTasks;
     }
 
-    private void addTask(int id, Task task) {
+    private void addTask(int id, Task task) throws DuplicateTaskIdException {
+        if (idToTaskMap.containsKey(id)) {
+            throw new DuplicateTaskIdException(String.format(DUPLICATE_TASK_ID, id));
+        }
         idToTaskMap.put(id, task);
     }
 
-    private void addSubtask(int id, Subtask subtask) {
+    private void addSubtask(int id, Subtask subtask) throws DuplicateTaskIdException {
         if (isEpicExisted(subtask.getEpicId())) {
+            if (idToSubTaskMap.containsKey(id)) {
+                throw new DuplicateTaskIdException(String.format(DUPLICATE_SUBTASK_ID, id));
+            }
+
             idToSubTaskMap.put(id, subtask);
             idToEpicMap.get(subtask.getEpicId()).getSubtaskIdList().add(id);
             int epicId = subtask.getEpicId();
@@ -222,7 +234,10 @@ public class AllTasksRepository {
         }
     }
 
-    private void addEpic(int id, Epic epic) {
+    private void addEpic(int id, Epic epic) throws DuplicateTaskIdException {
+        if (idToEpicMap.containsKey(id)) {
+            throw new DuplicateTaskIdException(String.format(DUPLICATE_EPIC_ID, id));
+        }
         idToEpicMap.put(id, epic);
     }
 

@@ -1,5 +1,6 @@
 package model;
 
+import constant.Constants;
 import constant.Status;
 
 import java.util.Objects;
@@ -15,9 +16,7 @@ public class Task {
     }
 
     public Task(String name, String description, Status status) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
+        this(Constants.UNASSIGNED_TASK_ID, name, description, status);
     }
 
     public Task(int id, String name, String description) {
@@ -63,6 +62,20 @@ public class Task {
         this.name = name;
     }
 
+    public String getTaskTypeUpperCase() {
+        return getClass().getSimpleName().toUpperCase();
+    }
+
+    public String toCsvString() {
+        StringBuilder csvString = new StringBuilder();
+        csvString.append(getId()).append(Constants.CSV_DELIMITER);
+        csvString.append(getTaskTypeUpperCase()).append(Constants.CSV_DELIMITER);
+        csvString.append(getName()).append(Constants.CSV_DELIMITER);
+        csvString.append(getStatus()).append(Constants.CSV_DELIMITER);
+        csvString.append(getDescription()).append(Constants.CSV_DELIMITER);
+        return csvString.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,4 +98,6 @@ public class Task {
                 ", description='" + description + '\'' +
                 '}';
     }
+
+
 }

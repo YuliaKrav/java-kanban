@@ -4,6 +4,7 @@ import constant.Status;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class TaskManagerTest<T extends TaskManager> {
 
     protected T taskManager;
+
+    @BeforeEach
+    public abstract void setup();
 
     @Test
     public void testCreateTask_StandardBehavior() {
