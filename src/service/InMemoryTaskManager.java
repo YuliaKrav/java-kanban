@@ -1,5 +1,6 @@
 package service;
 
+import exception.DuplicateTaskIdException;
 import model.Epic;
 import model.Task;
 import repository.AllTasksRepository;
@@ -8,9 +9,9 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    AllTasksRepository allTasksRepository;
-    HistoryManager historyManager = Managers.getDefaultHistory();
-    private static int generatorTaskId = 0;
+    protected AllTasksRepository allTasksRepository;
+    protected HistoryManager historyManager = Managers.getDefaultHistory();
+    protected static int generatorTaskId = 0;
 
     public InMemoryTaskManager() {
         this.allTasksRepository = new AllTasksRepository();
@@ -19,7 +20,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         task.setId(generateTaskId());
-        allTasksRepository.addTask(task);
+        try {
+            allTasksRepository.addTask(task);
+        } catch (DuplicateTaskIdException ex) {
+            System.err.println(ex.getMessage());
+            return null;
+        }
         return task;
     }
 
