@@ -2,10 +2,11 @@ package constant;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 public class Constants {
 
-    public static final String CSV_HEADER = "id,type,name,status,description,epic";
+    public static final String CSV_HEADER = "id,type,name,status,description,starttime,duration,endtime,epic";
     public static final int TASK_DATA_START_INDEX_AFTER_HEADER = 1;
     public static final String CSV_DELIMITER = ",";
     public static final String HISTORY_SEPARATOR = "";
@@ -15,4 +16,10 @@ public class Constants {
     public static final String DUPLICATE_TASK_ID = "Task with id %d already exists.";
     public static final String DUPLICATE_SUBTASK_ID = "Subtask with id %d already exists.";
     public static final String DUPLICATE_EPIC_ID = "Epic with id %d already exists.";
+    public static final int DEFAULT_TASK_DURATION_IN_MINUTES = 0;
+    public static final LocalDateTime DEFAULT_TASK_START_TIME = null;
+    public static final LocalDateTime DEFAULT_NULL_TASK_START_TIME = null;
+    public static final String DEFAULT_NULL_TASK_START_TIME_STRING = "null";
+    public static final LocalDateTime DEFAULT_NULL_TASK_END_TIME = null;
+
 }

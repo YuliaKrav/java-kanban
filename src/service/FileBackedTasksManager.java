@@ -45,7 +45,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private void save() {
+    protected void save() {
         try {
 
             List<String> taskLines = getAllTasks()
@@ -103,7 +103,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 List<Integer> historyTasksIds = HistoryFormatter.historyFromString(historyFromFile);
                 historyTasksIds.forEach(taskId -> {
                     Task task = internalGetTaskById(taskId);
-                    ;
+
                     internalAddToHistory(task);
                 });
             } else {
@@ -139,11 +139,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void synchronizeTaskIdGenerator(List<Task> tasksFromFile) {
-        int maxId = tasksFromFile.stream()
+        generatorTaskId = tasksFromFile.stream()
                 .map(Task::getId)
                 .max(Integer::compareTo)
                 .orElse(0);
-        generatorTaskId = maxId;
     }
 
     @Override
