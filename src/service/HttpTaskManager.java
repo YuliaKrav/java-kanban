@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import exception.KVClientException;
 import exception.TaskLoadingException;
 import exception.TaskSavingException;
+import formatter.LocalDateTimeAdapter;
 import kvclient.KVTaskClient;
 import model.Epic;
 import model.Subtask;
@@ -13,6 +14,7 @@ import model.TaskTypeAdapter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class HttpTaskManager extends FileBackedTasksManager {
@@ -28,6 +30,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 .registerTypeAdapter(Task.class, new TaskTypeAdapter())
                 .registerTypeAdapter(Epic.class, new TaskTypeAdapter())
                 .registerTypeAdapter(Subtask.class, new TaskTypeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
     }
 
