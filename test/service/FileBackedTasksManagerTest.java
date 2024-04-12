@@ -30,7 +30,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     private static final String TEST_TASK_FILE_NAME = "test_file_with_tasks.csv";
     private static final Path TEST_TASK_FILE_PATH = Paths.get(TEST_TASK_FILE_NAME);
 
-    @Override
     @BeforeEach
     public void setup() {
         try {
@@ -125,8 +124,8 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     private void createTestFileWithTasks() {
         List<String> lines = new ArrayList<>();
         lines.add(Constants.CSV_HEADER);
-        lines.add("1,TASK,Task1,NEW,Task1 description,");
-        lines.add("2,TASK,Task2,NEW,Task2 description,");
+        lines.add("1,TASK,Task1,NEW,Task1 description,null,0,null,");
+        lines.add("2,TASK,Task2,NEW,Task2 description,null,0,null,");
         lines.add(HISTORY_SEPARATOR);
         lines.add("");
         writeToFile(lines, TEST_TASK_FILE_PATH);
@@ -145,10 +144,10 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     private void createTestFileWithEpicAndSubtasks() {
         List<String> lines = new ArrayList<>();
         lines.add(Constants.CSV_HEADER);
-        lines.add("1,TASK,Task1,NEW,Task1 description,");
-        lines.add("3,EPIC,Epic1,NEW,Epic1 description,");
-        lines.add("4,SUBTASK,Subtask1,NEW,Subtask1 description,3");
-        lines.add("5,SUBTASK,Subtask11,NEW,Subtask1 description,3");
+        lines.add("1,TASK,Task1,NEW,Task1 description,null,0,null,");
+        lines.add("3,EPIC,Epic1,NEW,Epic1 description,null,0,null,");
+        lines.add("4,SUBTASK,Subtask1,NEW,Subtask1 description,null,0,null,3");
+        lines.add("5,SUBTASK,Subtask11,NEW,Subtask1 description,null,0,null,3");
         lines.add(HISTORY_SEPARATOR);
         lines.add("");
         writeToFile(lines, TEST_TASK_FILE_PATH);

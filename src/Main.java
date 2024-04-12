@@ -5,12 +5,19 @@ import service.FileBackedTasksManager;
 import service.Managers;
 import service.TaskManager;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static constant.Constants.TASK_FILE_PATH;
 
 public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefaultTaskManager();
+
+        System.out.println("*********Prioritized tasks***********************************************************");
+        List<Task> result = taskManager.getPrioritizedTasks();
+        taskManager.printTaskList(result);
 
         System.out.println("*********Tasks creation**************************************************************");
         Task task1 = taskManager.createTask(new Task("Task1", "Task1 description"));
@@ -20,12 +27,16 @@ public class Main {
         System.out.println("Task2 was created: " + task2);
 
         Task epic1 = taskManager.createTask(new Epic("Epic1", "Epic1 description"));
-        System.out.println("Epic2 was created: " + epic1);
+        System.out.println("Epic1 was created: " + epic1);
 
-        Task subtask1 = taskManager.createTask(new Subtask("Subtask1", "Subtask1 description", epic1.getId()));
+        LocalDateTime subtask1StartDate = LocalDateTime.of(2024, 1, 1, 8, 0);
+        int subtask1Duration = 60;
+        Task subtask1 = taskManager.createTask(new Subtask("Subtask1", "Subtask1 description", epic1.getId(), subtask1StartDate, subtask1Duration));
         System.out.println("Subtask1 was created: " + subtask1);
 
-        Task subtask11 = taskManager.createTask(new Subtask("Subtask11", "Subtask1 description", epic1.getId()));
+        LocalDateTime subtask11StartDate = LocalDateTime.of(2024, 1, 1, 12, 0);
+        int subtask11Duration = 80;
+        Task subtask11 = taskManager.createTask(new Subtask("Subtask11", "Subtask1 description", epic1.getId(), subtask11StartDate, subtask11Duration));
         System.out.println("Subtask11 was created: " + subtask11);
 
         Task epic2 = taskManager.createTask(new Epic("Epic2", "Epic2 description"));
@@ -50,4 +61,3 @@ public class Main {
         taskManager.printTaskList(newTasksManagerTest.getHistory());
     }
 }
-

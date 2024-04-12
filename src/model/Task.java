@@ -3,13 +3,19 @@ package model;
 import constant.Constants;
 import constant.Status;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static constant.Constants.DEFAULT_TASK_DURATION_IN_MINUTES;
+import static constant.Constants.DEFAULT_TASK_START_TIME;
 
 public class Task {
     private int id;
     private String name;
     private Status status;
     private String description;
+    private int durationInMinutes;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this(name, description, Status.NEW);
@@ -24,10 +30,16 @@ public class Task {
     }
 
     public Task(int id, String name, String description, Status status) {
+        this(id, name, description, status, DEFAULT_TASK_START_TIME, DEFAULT_TASK_DURATION_IN_MINUTES);
+    }
+
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, int durationInMinutes) {
         this.id = id;
         this.name = name;
-        this.description = description;
         this.status = status;
+        this.description = description;
+        this.durationInMinutes = durationInMinutes;
+        this.startTime = startTime;
     }
 
     public int getId() {
@@ -46,6 +58,14 @@ public class Task {
         this.id = id;
     }
 
+    public int getDurationInMinutes() {
+        return durationInMinutes;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -62,8 +82,20 @@ public class Task {
         this.name = name;
     }
 
+    public void setDurationInMinutes(int durationInMinutes) {
+        this.durationInMinutes = durationInMinutes;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public String getTaskTypeUpperCase() {
         return getClass().getSimpleName().toUpperCase();
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime != null ? startTime.plusMinutes(durationInMinutes) : null;
     }
 
     public String toCsvString() {
@@ -73,6 +105,9 @@ public class Task {
         csvString.append(getName()).append(Constants.CSV_DELIMITER);
         csvString.append(getStatus()).append(Constants.CSV_DELIMITER);
         csvString.append(getDescription()).append(Constants.CSV_DELIMITER);
+        csvString.append(getStartTime()).append(Constants.CSV_DELIMITER);
+        csvString.append(getDurationInMinutes()).append(Constants.CSV_DELIMITER);
+        csvString.append(getEndTime()).append(Constants.CSV_DELIMITER);
         return csvString.toString();
     }
 
@@ -96,8 +131,8 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
+                ", durationInMinutes=" + durationInMinutes +
+                ", startTime=" + startTime +
                 '}';
     }
-
-
 }

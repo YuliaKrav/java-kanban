@@ -3,6 +3,11 @@ package model;
 import constant.Constants;
 import constant.Status;
 
+import java.time.LocalDateTime;
+
+import static constant.Constants.DEFAULT_TASK_DURATION_IN_MINUTES;
+import static constant.Constants.DEFAULT_TASK_START_TIME;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -11,11 +16,20 @@ public class Subtask extends Task {
     }
 
     public Subtask(String name, String description, Status status, int epicId) {
-        this(Constants.UNASSIGNED_TASK_ID, name, description, status, epicId);
+        this(Constants.UNASSIGNED_TASK_ID, name, description, status, epicId, DEFAULT_TASK_START_TIME, DEFAULT_TASK_DURATION_IN_MINUTES);
+    }
+
+    public Subtask(String name, String description, int epicId, LocalDateTime startDate, int duration) {
+        this(Constants.UNASSIGNED_TASK_ID, name, description, Status.NEW, epicId, startDate, duration);
     }
 
     public Subtask(int id, String name, String description, Status status, int epicId) {
         super(id, name, description, status);
+        this.epicId = epicId;
+    }
+
+    public Subtask(int id, String name, String description, Status status, int epicId, LocalDateTime startDate, int duration) {
+        super(id, name, description, status, startDate, duration);
         this.epicId = epicId;
     }
 

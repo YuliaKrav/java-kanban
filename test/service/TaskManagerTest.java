@@ -1,26 +1,26 @@
 package service;
 
 import constant.Status;
+import exception.MissingEpicException;
+import exception.TimeOverlapException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
     protected T taskManager;
-
-    @BeforeEach
-    public abstract void setup();
 
     @Test
     public void testCreateTask_StandardBehavior() {
@@ -39,6 +39,37 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void testCreateTask_InvalidId() {
         Task task = taskManager.getTaskById(-1);
         assertNull(task);
+    }
+
+    @Test
+    public void testTaskTimeOverlap_NoOverlap() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 4, 1, 10, 0);
+        Task task1 = new Task(1, "Task1", "Task1 description", Status.NEW, startTime1, 60);
+        taskManager.createTask(task1);
+
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 4, 1, 12, 0); // 2 часа после начала task1
+        Task task2 = new Task(2, "Task2", "Task2 description", Status.NEW, startTime2, 60);
+        taskManager.createTask(task2);
+
+        assertNotNull(task1);
+        assertNotNull(task2);
+        assertEquals(2, taskManager.getAllTasks().size(), "Both tasks should be added without errors.");
+    }
+
+    @Test
+    public void testTaskTimeOverlap_OverlapDetected() {
+        LocalDateTime startTime = LocalDateTime.now();
+        Task task1 = new Task(1, "Task1", "Task1 description", Status.NEW, startTime, 30);
+        taskManager.createTask(task1);
+
+        Task task2 = new Task(2, "Task2", "Task2 description", Status.NEW, startTime.plusMinutes(10), 30);
+        assertThrows(TimeOverlapException.class, () -> taskManager.createTask(task2), "An exception should be thrown due to time overlap.");
+    }
+
+    @Test
+    public void testSubtaskWithoutEpic() {
+        Subtask subtask = new Subtask("Subtask1", "Subtask1 description", -1);
+        assertThrows(MissingEpicException.class, () -> taskManager.createTask(subtask));
     }
 
     @Test
@@ -260,5 +291,40 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(deletedTasks.contains(task2));
 
         assertEquals(0, taskManager.getAllTasks().size());
+    }
+
+    @Test
+    public void testHistoryOrder() {
+        Task task1 = new Task("Task1", "Task1 description");
+        taskManager.createTask(task1);
+        Task task2 = new Task("Task2", "Task2 description");
+        taskManager.createTask(task2);
+
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+
+        List<Task> history = taskManager.getHistory();
+
+        assertEquals(2, history.size(), "History should contain two tasks.");
+        assertEquals(task1, history.get(0), "Task1 should be the first in history.");
+        assertEquals(task2, history.get(1), "Task2 should be the second in history.");
+    }
+
+    @Test
+    public void testHistoryNoDuplicates() {
+        Task task1 = new Task("Task1", "Task1 description");
+        taskManager.createTask(task1);
+        Task task2 = new Task("Task2", "Task2 description");
+        taskManager.createTask(task2);
+
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getTaskById(task1.getId());
+
+        List<Task> history = taskManager.getHistory();
+
+        assertEquals(2, history.size(), "History should contain two tasks, without duplicates.");
+        assertEquals(task2, history.get(0), "Task2 should be the first in history.");
+        assertEquals(task1, history.get(1), "Task1 should be the second in history.");
     }
 }

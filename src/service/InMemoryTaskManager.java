@@ -70,6 +70,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Task> getPrioritizedTasks() {
+        return allTasksRepository.getPrioritizedTasks();
+    }
+
+    @Override
     public List<Task> deleteTaskById(int id) {
         List<Task> deletedTasks = allTasksRepository.deleteTaskById(id);
         removeTasksFromHistoryManager(deletedTasks);
@@ -117,6 +122,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public void printPrioritizedTaskList(List<Task> taskList) {
+        for (Task task : taskList) {
+            System.out.println(task);
+        }
+    }
+
     private int generateTaskId() {
         generatorTaskId++;
         return generatorTaskId;
@@ -128,4 +139,3 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 }
-
