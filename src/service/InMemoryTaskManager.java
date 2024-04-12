@@ -15,6 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         this.allTasksRepository = new AllTasksRepository();
+        generatorTaskId = 0;
     }
 
     @Override
