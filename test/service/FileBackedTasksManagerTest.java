@@ -27,11 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
+
     private static final String TEST_TASK_FILE_NAME = "test_file_with_tasks.csv";
     private static final Path TEST_TASK_FILE_PATH = Paths.get(TEST_TASK_FILE_NAME);
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException {
         try {
             Files.write(TEST_TASK_FILE_PATH, new byte[0]);
         } catch (IOException e) {
@@ -88,14 +89,14 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void testLoadTasks() {
+    public void testLoadTasks() throws IOException {
         createTestFileWithTasks();
         taskManager = new FileBackedTasksManager(TEST_TASK_FILE_PATH);
         assertEquals(2, taskManager.getAllTasks().size());
     }
 
     @Test
-    public void testLoadHistory() {
+    public void testLoadHistory() throws IOException {
         createTestFileWithHistory();
         taskManager = new FileBackedTasksManager(TEST_TASK_FILE_PATH);
 
@@ -106,7 +107,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void testLoadEpicWithSubtasks() {
+    public void testLoadEpicWithSubtasks() throws IOException {
         createTestFileWithEpicAndSubtasks();
         taskManager = new FileBackedTasksManager(TEST_TASK_FILE_PATH);
 

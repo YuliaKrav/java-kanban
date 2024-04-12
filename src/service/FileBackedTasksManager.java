@@ -22,21 +22,26 @@ import java.util.stream.Collectors;
 import static constant.Constants.CSV_HEADER;
 import static constant.Constants.HISTORY_SEPARATOR;
 import static constant.Constants.TASK_DATA_START_INDEX_AFTER_HEADER;
+import static constant.Constants.TASK_FILE_PATH;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final Path filePath;
     private boolean isLoaded = false;
 
-    public FileBackedTasksManager(Path filePath) {
-        this.filePath = filePath;
-        if (!isLoaded) {
-            load();
-            isLoaded = true;
+    public FileBackedTasksManager(Path filePath) throws IOException {
+        if (filePath == null) {
+            this.filePath = TASK_FILE_PATH;
+        } else {
+            this.filePath = filePath;
+            if (!isLoaded) {
+                load();
+                isLoaded = true;
+            }
         }
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file.toPath());
         if (!fileBackedTasksManager.isLoaded) {
             fileBackedTasksManager.load();
@@ -47,7 +52,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     protected void save() {
         try {
-
             List<String> taskLines = getAllTasks()
                     .stream()
                     .map(Task::toCsvString)
@@ -114,7 +118,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void internalCreateTaskWithId(Task task) {
+    void internalCreateTaskWithId(Task task) {
         try {
             allTasksRepository.addTask(task);
         } catch (DuplicateTaskIdException ex) {
@@ -138,7 +142,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return Files.readAllLines(filePath);
     }
 
-    private void synchronizeTaskIdGenerator(List<Task> tasksFromFile) {
+    void synchronizeTaskIdGenerator(List<Task> tasksFromFile) {
         generatorTaskId = tasksFromFile.stream()
                 .map(Task::getId)
                 .max(Integer::compareTo)

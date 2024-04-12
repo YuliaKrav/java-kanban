@@ -70,6 +70,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Task> getAllEpicSubtasks(int id) {
+        return allTasksRepository.getAllEpicSubtasks(id);
+    }
+
+    @Override
     public List<Task> getPrioritizedTasks() {
         return allTasksRepository.getPrioritizedTasks();
     }

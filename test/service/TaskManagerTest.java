@@ -1,13 +1,17 @@
 package service;
 
 import constant.Status;
+import exception.KVClientException;
 import exception.MissingEpicException;
 import exception.TimeOverlapException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.List;
 

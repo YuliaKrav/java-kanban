@@ -21,5 +21,5 @@ public class Constants {
     public static final LocalDateTime DEFAULT_NULL_TASK_START_TIME = null;
     public static final String DEFAULT_NULL_TASK_START_TIME_STRING = "null";
     public static final LocalDateTime DEFAULT_NULL_TASK_END_TIME = null;
-
+    public static final String KV_SERVER_URL = "http://localhost:8078";
 }
