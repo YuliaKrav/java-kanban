@@ -1,17 +1,36 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TaskTypeAdapter extends TypeAdapter<Task> {
 
-    private final Gson gson = new Gson();
+    private final JsonSerializer<LocalDateTime> localDateTimeSerializer = (src, typeOfSrc, context) ->
+            src == null ? JsonNull.INSTANCE : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+    private final JsonDeserializer<LocalDateTime> localDateTimeDeserializer = (json, typeOfT, context) ->
+            json.isJsonNull() ? null : LocalDateTime.parse(json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    private final Gson gson;
+
+    public TaskTypeAdapter() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, localDateTimeSerializer)
+                .registerTypeAdapter(LocalDateTime.class, localDateTimeDeserializer)
+                .create();
+    }
 
     @Override
     public void write(JsonWriter out, Task task) {

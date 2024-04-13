@@ -1,7 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import formatter.LocalDateTimeAdapter;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -19,9 +21,9 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -36,13 +38,17 @@ class HttpTaskServerTest {
     private TaskManager taskManager;
     private HttpClient client;
     private static final int SERVER_PORT = 8080;
+    private Gson gson;
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() throws IOException, InterruptedException {
         taskManager = new InMemoryTaskManager();
         httpTaskServer = new HttpTaskServer(taskManager);
         httpTaskServer.start();
         client = HttpClient.newHttpClient();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
     }
 
     @AfterEach
@@ -64,7 +70,7 @@ class HttpTaskServerTest {
 
         assertEquals(HTTP_OK, response.statusCode());
 
-        Task responseTask = new Gson().fromJson(response.body(), Task.class);
+        Task responseTask = gson.fromJson(response.body(), Task.class);
 
         assertEquals(testTask.getId(), responseTask.getId());
     }
@@ -105,7 +111,7 @@ class HttpTaskServerTest {
 
         Type taskListType = new TypeToken<ArrayList<Task>>() {
         }.getType();
-        List<Task> allTaskType = new Gson().fromJson(response.body(), taskListType);
+        List<Task> allTaskType = gson.fromJson(response.body(), taskListType);
         assertEquals(2, allTaskType.size());
         assertTrue(allTaskType.contains(task1));
         assertTrue(allTaskType.contains(task2));
@@ -132,11 +138,11 @@ class HttpTaskServerTest {
 
         Type subtaskListType = new TypeToken<ArrayList<Subtask>>() {
         }.getType();
-        List<Subtask> returnedSubtasks = new Gson().fromJson(response.body(), subtaskListType);
+        List<Subtask> returnedSubtasks = gson.fromJson(response.body(), subtaskListType);
 
         assertEquals(2, returnedSubtasks.size());
 
-        List<String> returnedSubtaskNames = returnedSubtasks.stream().map(Subtask::getName).collect(Collectors.toList());
+        List<String> returnedSubtaskNames = returnedSubtasks.stream().map(Subtask::getName).toList();
         assertTrue(returnedSubtaskNames.contains(subtask1.getName()));
         assertTrue(returnedSubtaskNames.contains(subtask2.getName()));
     }
@@ -166,7 +172,7 @@ class HttpTaskServerTest {
 
         Type subtaskListType = new TypeToken<ArrayList<Subtask>>() {
         }.getType();
-        List<Subtask> allSubtaskType = new Gson().fromJson(response.body(), subtaskListType);
+        List<Subtask> allSubtaskType = gson.fromJson(response.body(), subtaskListType);
         assertEquals(3, allSubtaskType.size());
         assertTrue(allSubtaskType.contains(subtask1));
         assertTrue(allSubtaskType.contains(subtask2));
@@ -193,7 +199,7 @@ class HttpTaskServerTest {
 
         Type epicListType = new TypeToken<ArrayList<Epic>>() {
         }.getType();
-        List<Epic> allEpicType = new Gson().fromJson(response.body(), epicListType);
+        List<Epic> allEpicType = gson.fromJson(response.body(), epicListType);
         assertEquals(2, allEpicType.size());
         assertTrue(allEpicType.contains(epic1));
         assertTrue(allEpicType.contains(epic2));
@@ -213,7 +219,7 @@ class HttpTaskServerTest {
 
         assertEquals(HttpURLConnection.HTTP_CREATED, response.statusCode());
 
-        Task responseTask = new Gson().fromJson(response.body(), Task.class);
+        Task responseTask = gson.fromJson(response.body(), Task.class);
 
         assertEquals("Test task", responseTask.getName());
         assertEquals("Test description", responseTask.getDescription());

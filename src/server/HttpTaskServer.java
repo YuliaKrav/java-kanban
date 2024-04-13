@@ -1,9 +1,11 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import formatter.LocalDateTimeAdapter;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -13,6 +15,7 @@ import service.TaskManager;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,9 +44,13 @@ public class HttpTaskServer {
 
     private final TaskManager taskManager;
     private HttpServer server;
+    private final Gson gson;
 
     public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
     }
 
     public void start() throws IOException {
@@ -60,28 +67,18 @@ public class HttpTaskServer {
             String path = httpExchange.getRequestURI().getPath();
 
             switch (method) {
-                case "GET":
-                    handleGetRequest(path, httpExchange);
-                    break;
-                case "POST":
-                    handlePostRequest(path, httpExchange);
-                    break;
-                case "PUT":
-                    handlePutRequest(path, httpExchange);
-                    break;
-                case "DELETE":
-                    handleDeleteRequest(path, httpExchange);
-                    break;
-                default:
-                    handleResponse(httpExchange, "Method " + method + " is not allowed", HTTP_METHOD_NOT_ALLOWED);
-                    break;
+                case "GET" -> handleGetRequest(path, httpExchange);
+                case "POST" -> handlePostRequest(path, httpExchange);
+                case "PUT" -> handlePutRequest(path, httpExchange);
+                case "DELETE" -> handleDeleteRequest(path, httpExchange);
+                default ->
+                        handleResponse(httpExchange, "Method " + method + " is not allowed", HTTP_METHOD_NOT_ALLOWED);
             }
         }
     }
 
     private void handleGetRequest(String path, HttpExchange httpExchange) throws IOException {
         String queryParameters = httpExchange.getRequestURI().getQuery();
-
         Matcher allTasksMatcher = allTasksPattern.matcher(path);
         Matcher taskByIdMatcher = taskByIdPattern.matcher(path + "?" + queryParameters);
         Matcher epicSubtasksMatcher = epicSubtasksPattern.matcher(path + "?" + queryParameters);
@@ -135,7 +132,7 @@ public class HttpTaskServer {
     }
 
     private void handleResponse(HttpExchange httpExchange, Object data, int statusCode) throws IOException {
-        String response = data instanceof String ? (String) data : new Gson().toJson(data);
+        String response = data instanceof String ? (String) data : gson.toJson(data);
         httpExchange.sendResponseHeaders(statusCode, response.getBytes().length);
         try (OutputStream responseBody = httpExchange.getResponseBody()) {
             responseBody.write(response.getBytes());
@@ -144,8 +141,6 @@ public class HttpTaskServer {
 
     private void handlePostRequest(String path, HttpExchange httpExchange) throws IOException {
         String requestBody = new String(httpExchange.getRequestBody().readAllBytes());
-        Gson gson = new Gson();
-
         Matcher taskMatcher = taskTypePattern.matcher(path);
         Matcher epicMatcher = epicPattern.matcher(path);
         Matcher subtaskMatcher = subtaskPattern.matcher(path);
@@ -172,7 +167,6 @@ public class HttpTaskServer {
 
     private void handlePutRequest(String path, HttpExchange httpExchange) throws IOException {
         String requestBody = new String(httpExchange.getRequestBody().readAllBytes());
-        Gson gson = new Gson();
 
         Matcher updateMatcher = updatePattern.matcher(path);
 
