@@ -9,6 +9,7 @@ import java.util.Objects;
 import static constant.Constants.DEFAULT_TASK_DURATION_IN_MINUTES;
 import static constant.Constants.DEFAULT_TASK_START_TIME;
 
+@TaskTypeAnnotation("TASK")
 public class Task {
     private int id;
     private String name;

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import static constant.Constants.DEFAULT_TASK_DURATION_IN_MINUTES;
 import static constant.Constants.DEFAULT_TASK_START_TIME;
 
+@TaskTypeAnnotation("SUBTASK")
 public class Subtask extends Task {
     private int epicId;
 

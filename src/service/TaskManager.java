@@ -23,6 +23,8 @@ public interface TaskManager {
 
     List<Task> getAllEpicSubtasks(Epic epic);
 
+    List<Task> getAllEpicSubtasks(int id);
+
     List<Task> deleteTaskById(int id);
 
     List<Task> deleteAllTaskType();

@@ -15,6 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         this.allTasksRepository = new AllTasksRepository();
+        generatorTaskId = 0;
     }
 
     @Override
@@ -67,6 +68,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getAllEpicSubtasks(Epic epic) {
         return allTasksRepository.getAllEpicSubtasks(epic);
+    }
+
+    @Override
+    public List<Task> getAllEpicSubtasks(int id) {
+        return allTasksRepository.getAllEpicSubtasks(id);
     }
 
     @Override

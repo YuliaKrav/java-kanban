@@ -1,18 +1,20 @@
 import model.Epic;
 import model.Subtask;
 import model.Task;
-import service.FileBackedTasksManager;
+import server.KVServer;
+import service.HttpTaskManager;
 import service.Managers;
 import service.TaskManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static constant.Constants.TASK_FILE_PATH;
-
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+
         TaskManager taskManager = Managers.getDefaultTaskManager();
 
         System.out.println("*********Prioritized tasks***********************************************************");
@@ -29,12 +31,12 @@ public class Main {
         Task epic1 = taskManager.createTask(new Epic("Epic1", "Epic1 description"));
         System.out.println("Epic1 was created: " + epic1);
 
-        LocalDateTime subtask1StartDate = LocalDateTime.of(2024, 1, 1, 8, 0);
+        LocalDateTime subtask1StartDate = LocalDateTime.of(2023, 1, 1, 8, 0);
         int subtask1Duration = 60;
         Task subtask1 = taskManager.createTask(new Subtask("Subtask1", "Subtask1 description", epic1.getId(), subtask1StartDate, subtask1Duration));
         System.out.println("Subtask1 was created: " + subtask1);
 
-        LocalDateTime subtask11StartDate = LocalDateTime.of(2024, 1, 1, 12, 0);
+        LocalDateTime subtask11StartDate = LocalDateTime.of(2023, 1, 1, 12, 0);
         int subtask11Duration = 80;
         Task subtask11 = taskManager.createTask(new Subtask("Subtask11", "Subtask1 description", epic1.getId(), subtask11StartDate, subtask11Duration));
         System.out.println("Subtask11 was created: " + subtask11);
@@ -52,12 +54,13 @@ public class Main {
         System.out.println("All task in the history (subtask2, task1 and views, epic1): ");
         taskManager.printTaskList(taskManager.getHistory());
 
-        System.out.println("*********File Manager testing*************************************************************");
-        FileBackedTasksManager newTasksManagerTest = new FileBackedTasksManager(TASK_FILE_PATH);
-        System.out.println("Tasks in newTasksManagerTest: ");
-        newTasksManagerTest.printTaskList(newTasksManagerTest.getAllTasks());
-        System.out.println();
-        System.out.println("History in newTasksManagerTest:");
-        taskManager.printTaskList(newTasksManagerTest.getHistory());
+        System.out.println("*********Loading testing*************************************************************");
+        TaskManager taskManager2 = Managers.getDefaultTaskManager();
+        System.out.println("All task in the new Http Task Manager: ");
+        HttpTaskManager httpTaskManager = (HttpTaskManager) taskManager2;
+        httpTaskManager.load();
+        httpTaskManager.printTaskList(httpTaskManager.getAllTasks());
+
+        kvServer.stop();
     }
 }

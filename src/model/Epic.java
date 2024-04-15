@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@TaskTypeAnnotation("EPIC")
 public class Epic extends Task {
     private List<Integer> subtaskIdList = new ArrayList<>();
     private LocalDateTime endTime = null;

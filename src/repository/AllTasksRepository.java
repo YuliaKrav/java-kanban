@@ -215,6 +215,10 @@ public class AllTasksRepository {
         return resultEpicSubtaskList;
     }
 
+    public List<Task> getAllEpicSubtasks(int id) {
+        return (idToEpicMap.containsKey(id)) ? getAllEpicSubtasks(idToEpicMap.get(id)) : new ArrayList<>();
+    }
+
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasksByStartTime);
     }
@@ -348,9 +352,11 @@ public class AllTasksRepository {
             idToSubTaskMap.put(id, subtask);
             addToPrioritizedTasks(subtask);
 
-            idToEpicMap.get(subtask.getEpicId()).getSubtaskIdList().add(id);
-            int epicId = subtask.getEpicId();
-            changeEpicStatusAndTimeProperties(epicId);
+            if (!idToEpicMap.get(subtask.getEpicId()).getSubtaskIdList().contains(id)) {
+                idToEpicMap.get(subtask.getEpicId()).getSubtaskIdList().add(id);
+                int epicId = subtask.getEpicId();
+                changeEpicStatusAndTimeProperties(epicId);
+            }
         } else {
             throw new MissingEpicException(String.format("Epic with ID %d does not exist", subtask.getEpicId()));
         }
